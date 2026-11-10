@@ -80,11 +80,15 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
-app.listen(PORT, async () => {
-  console.log(`\n🎵 Vibely server running on http://localhost:${PORT}`);
-  console.log(`📱 Frontend available at:`);
-  console.log(`   - Welcome: http://localhost:${PORT}/welcome.html`);
-  console.log(`   - App:     http://localhost:${PORT}/index.html\n`);
-  await testConnection();
-});
+// Start server locally (only when not running in Vercel serverless)
+if (!process.env.VERCEL) {
+  app.listen(PORT, async () => {
+    console.log(`\n🎵 Vibely server running on http://localhost:${PORT}`);
+    console.log(`📱 Frontend available at:`);
+    console.log(`   - Welcome: http://localhost:${PORT}/welcome.html`);
+    console.log(`   - App:     http://localhost:${PORT}/index.html\n`);
+    await testConnection();
+  });
+}
+
+export default app;
