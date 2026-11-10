@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "outputDirectory": "frontend",
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/welcome.html" },
+    { "source": "/app", "destination": "/index.html" }
+  ]
+}

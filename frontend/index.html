@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibely - Feel the Music</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <!-- Mobile Drawer Backdrop Overlay -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="app-container">
+
+        <!-- 1. LEFT SIDEBAR -->
+        <aside class="sidebar left-sidebar" id="leftSidebar">
+            <!-- Mobile Close Button (Visible only on phone/tablet) -->
+            <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close navigation menu">✕</button>
+
+            <a href="welcome.html" class="logo" title="Back to Welcome Page">
+                <span class="logo-icon">♫</span>
+                <span>Vibely</span>
+                <span class="logo-badge">PRO</span>
+            </a>
+
+            <!-- Primary Navigation -->
+            <nav class="navigation">
+                <p class="nav-heading">MENU</p>
+
+                <a href="#" class="nav-link active" id="navHome">
+                    <span class="nav-icon">⌂</span>
+                    <span>Home</span>
+                </a>
+
+                <a href="#discover" class="nav-link" id="navSearch">
+                    <span class="nav-icon">⌕</span>
+                    <span>Search</span>
+                </a>
+
+                <a href="#discover" class="nav-link" id="navLibrary">
+                    <span class="nav-icon">▤</span>
+                    <span>Your Library</span>
+                </a>
+
+                <a href="#favorites" class="nav-link" id="favoritesNav">
+                    <span class="nav-icon">♥</span>
+                    <span>Liked Songs</span>
+                </a>
+
+                <a href="#featuredSection" class="nav-link" id="navPlaylists">
+                    <span class="nav-icon">♫</span>
+                    <span>Playlists</span>
+                </a>
+            </nav>
+
+            <!-- Playlist Shortcuts -->
+            <div class="playlist-shortcuts-section">
+                <p class="nav-heading">PLAYLIST SHORTCUTS</p>
+                <div class="shortcut-list">
+                    <button type="button" class="shortcut-link" data-shortcut="chill">
+                        <span class="shortcut-dot dot-chill"></span>
+                        <span>Chill Vibes</span>
+                    </button>
+                    <button type="button" class="shortcut-link" data-shortcut="gaming">
+                        <span class="shortcut-dot dot-gaming"></span>
+                        <span>Gaming Music</span>
+                    </button>
+                    <button type="button" class="shortcut-link" data-shortcut="study">
+                        <span class="shortcut-dot dot-study"></span>
+                        <span>Study Focus</span>
+                    </button>
+                    <button type="button" class="shortcut-link" data-shortcut="top50">
+                        <span class="shortcut-dot dot-top"></span>
+                        <span>Top 50 Hits</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Premium Subscription Card -->
+            <div class="premium-card">
+                <div class="premium-glow-orb"></div>
+                <div class="premium-badge">👑 VIBELY PRO</div>
+                <h4>Upgrade to Pro</h4>
+                <p>Ad-free streaming, Hi-Fi audio & unlimited skips.</p>
+                <button type="button" class="premium-btn" id="upgradeBtn">Upgrade Now</button>
+            </div>
+        </aside>
+
+        <!-- 2. MAIN SCROLLABLE CONTENT -->
+        <main class="main-content">
+
+            <!-- TOP NAVIGATION BAR -->
+            <header class="topbar">
+                <!-- Mobile Menu Hamburger Button (Visible only on phone/tablet) -->
+                <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open navigation menu" title="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <!-- Large Search Bar with Spotify-style Live Dropdown -->
+                <div class="topbar-search-wrapper" id="searchWrapper">
+                    <span class="search-input-icon">⌕</span>
+                    <input
+                        type="text"
+                        id="searchInput"
+                        class="topbar-search-input"
+                        placeholder="Search songs, artists, or playlists..."
+                        autocomplete="off"
+                    >
+                    <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search" style="display: none;">✕</button>
+                    <span class="search-kbd-tag" id="searchKbdTag">SEARCH</span>
+
+                    <!-- Spotify-style Live Search Results Dropdown -->
+                    <div class="spotify-search-dropdown" id="spotifySearchDropdown" style="display: none;">
+                        <!-- Injected dynamically by JS -->
+                    </div>
+                </div>
+
+                <!-- Right Topbar Controls -->
+                
+<!-- Right Topbar Controls -->
+<div class="topbar-actions">
+
+    <!-- Notification Bell -->
+    <button
+        type="button"
+        class="icon-circle-btn"
+        id="notificationBtn"
+        title="Notifications"
+        aria-label="Notifications"
+    >
+        <i data-lucide="bell"></i>
+        <span class="notification-indicator"></span>
+    </button>
+
+    <!-- Dark/Light Mode Toggle -->
+    <button
+        type="button"
+        class="theme-toggle icon-circle-btn"
+        id="themeToggle"
+        aria-label="Toggle theme"
+        title="Toggle dark/light mode"
+    >
+        <i data-lucide="sun" id="themeIcon"></i>
+    </button>
+
+    <!-- User Profile -->
+    <div class="profile-menu-container">
+
+        <button
+            type="button"
+            class="profile"
+            id="profileBtn"
+            title="Account profile"
+            aria-label="Account profile"
+        >
+            <i data-lucide="user-round" id="profileAvatar"></i>
+        </button>
+
+        <div
+            class="profile-dropdown-menu"
+            id="profileDropdown"
+        >
+            <!-- Populated dynamically by auth.js -->
+        </div>
+
+    </div>
+
+</div>
+</header>
+
+<script>
+    lucide.createIcons();
+</script>
+
+
+            <!-- 3. HERO BANNER (Anime-inspired Sunset Theme) -->
+            <section class="hero-banner" id="heroBanner">
+                <div class="hero-anime-backdrop"></div>
+                <div class="hero-particles">
+                    <span class="sparkle sp-1">✦</span>
+                    <span class="sparkle sp-2">✨</span>
+                    <span class="sparkle sp-3">♫</span>
+                    <span class="sparkle sp-4">✦</span>
+                </div>
+
+                <div class="hero-content-wrap">
+                    <div class="hero-tag">
+                        <span class="pulse-dot"></span>
+                        <span id="heroSlideTag">FEATURED SOUNDTRACK</span>
+                    </div>
+
+                    <h1 id="heroHeading">Feel the music.<br><span>Live the vibe.</span></h1>
+                    <p id="heroSubtitle">Discover your favorite songs and make every moment special with curated anime sunset vibes.</p>
+
+                    <div class="hero-cta-group">
+                        <button type="button" class="hero-play-btn" id="heroPlayBtn">
+                            <span class="btn-icon">▶</span>
+                            <span>Play Now</span>
+                        </button>
+                        <button type="button" class="hero-explore-btn" id="heroExploreBtn">
+                            <span>Explore Vibes</span>
+                            <span>↓</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hero Floating Album Art Card -->
+                <div class="hero-vinyl-card" id="heroVinylCard">
+                    <div class="vinyl-disc"></div>
+                    <img src="assets/images/feature1.png" alt="Anime Sunset Soundtrack" class="vinyl-jacket" id="heroCoverImg">
+                    <div class="vinyl-info-pill">
+                        <span class="vinyl-note">♫</span>
+                        <div>
+                            <strong id="heroVinylTitle">Midnight Vibes</strong>
+                            <small id="heroVinylArtist">BlueAzumy03</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carousel Navigation Arrows & Indicators -->
+                <div class="hero-carousel-nav">
+                    <button type="button" class="carousel-arrow prev" id="carouselPrev" aria-label="Previous featured track">‹</button>
+                    <div class="carousel-dots" id="carouselDots">
+                        <span class="dot active" data-index="0"></span>
+                        <span class="dot" data-index="1"></span>
+                        <span class="dot" data-index="2"></span>
+                    </div>
+                    <button type="button" class="carousel-arrow next" id="carouselNext" aria-label="Next featured track">›</button>
+                </div>
+            </section>
+
+            <!-- 4. RECENTLY PLAYED (4 Cards in a Horizontal Grid) -->
+            <section class="dashboard-section" id="recentlyPlayed">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">YOUR RECENT ACTIVITY</span>
+                        <h2>Recently Played</h2>
+                    </div>
+                    <button type="button" class="see-all-btn" id="seeAllRecentBtn">See All →</button>
+                </div>
+
+                <div class="recent-grid-4">
+                    <div class="recent-card" data-song-idx="0" data-vibe="midnight">
+                        <div class="recent-art-wrap">
+                            <img src="assets/images/feature1.png" alt="Don't love like I love you" class="recent-art-img">
+                            <button type="button" class="recent-hover-play" aria-label="Play song">▶</button>
+                        </div>
+                        <div class="recent-meta">
+                            <h4>Don't love like I love you</h4>
+                            <p>Midnight Vibes • BlueAzumy03</p>
+                        </div>
+                    </div>
+
+                    <div class="recent-card" data-song-idx="1" data-vibe="love">
+                        <div class="recent-art-wrap">
+                            <img src="assets/images/feature2.png" alt="Love Song" class="recent-art-img">
+                            <button type="button" class="recent-hover-play" aria-label="Play song">▶</button>
+                        </div>
+                        <div class="recent-meta">
+                            <h4>Love Song</h4>
+                            <p>Love Songs • leberch</p>
+                        </div>
+                    </div>
+
+                    <div class="recent-card" data-song-idx="2" data-vibe="chill">
+                        <div class="recent-art-wrap">
+                            <img src="assets/images/feature3.png" alt="Gospel Song Praise" class="recent-art-img">
+                            <button type="button" class="recent-hover-play" aria-label="Play song">▶</button>
+                        </div>
+                        <div class="recent-meta">
+                            <h4>Praise & Peace</h4>
+                            <p>Chill Moments • echoes of lumen</p>
+                        </div>
+                    </div>
+
+                    <div class="recent-card" data-song-idx="3" data-vibe="midnight">
+                        <div class="recent-art-wrap">
+                            <img src="assets/images/song1.jpg" alt="Midnight City Lights" class="recent-art-img">
+                            <button type="button" class="recent-hover-play" aria-label="Play song">▶</button>
+                        </div>
+                        <div class="recent-meta">
+                            <h4>Midnight City Lights</h4>
+                            <p>Sunset Lofi • Neon Skyline</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FEATURED PLAYLIST CARDS -->
+            <section class="dashboard-section" id="featuredSection">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">CURATED SOUNDSCAPES</span>
+                        <h2>Featured Vibes</h2>
+                    </div>
+                </div>
+
+                <div class="featured-grid">
+                    <div class="music-card" data-vibe="midnight" title="Click to play Midnight Vibes">
+                        <div class="card-image-wrap">
+                            <img src="assets/images/feature1.png" alt="Midnight Vibes" class="featured-image">
+                            <button type="button" class="card-play-btn" aria-label="Play Midnight Vibes">▶</button>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title-row">
+                                <h3>Midnight Vibes</h3>
+                                <span class="vibe-badge">5 Songs</span>
+                            </div>
+                            <p>Relax and enjoy the night</p>
+                        </div>
+                    </div>
+
+                    <div class="music-card" data-vibe="love" title="Click to play Love Songs">
+                        <div class="card-image-wrap">
+                            <img src="assets/images/feature2.png" alt="Love Songs" class="featured-image">
+                            <button type="button" class="card-play-btn" aria-label="Play Love Songs">▶</button>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title-row">
+                                <h3>Love Songs</h3>
+                                <span class="vibe-badge">5 Songs</span>
+                            </div>
+                            <p>Feel every beat</p>
+                        </div>
+                    </div>
+
+                    <div class="music-card" data-vibe="chill" title="Click to play Chill Moments">
+                        <div class="card-image-wrap">
+                            <img src="assets/images/feature3.png" alt="Chill Moments" class="featured-image">
+                            <button type="button" class="card-play-btn" aria-label="Play Chill Moments">▶</button>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title-row">
+                                <h3>Chill Moments</h3>
+                                <span class="vibe-badge">5 Songs</span>
+                            </div>
+                            <p>Take a little break</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAVORITES / LIKED SONGS SECTION -->
+            <section class="recent-section favorites-section" id="favorites" style="display: none;">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">YOUR SAVED TRACKS</span>
+                        <h2>Liked Songs <span class="favorites-count" id="favoritesCount"></span></h2>
+                    </div>
+                    <button type="button" class="clear-favorites-btn" id="clearFavoritesBtn" title="Clear all favorites">🗑️ Clear All</button>
+                </div>
+
+                <div class="song-list" id="favoritesList">
+                    <!-- Favorites generated by JavaScript -->
+                </div>
+
+                <div class="empty-favorites" id="emptyFavorites">
+                    <span class="empty-icon">♡</span>
+                    <h3>No liked songs yet</h3>
+                    <p>Tap the heart icon on any song to save it to your collection.</p>
+                </div>
+            </section>
+
+            <!-- DISCOVER MUSIC (Full Song List) -->
+            <section class="recent-section" id="discover">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow" id="sectionEyebrow">YOUR PERSONAL COLLECTION</span>
+                        <h2 id="sectionTitle">Discover Music</h2>
+                    </div>
+                    <button type="button" class="reset-vibe-btn" id="resetVibeBtn" style="display: none;" title="Show all songs in collection">✕ View All Songs</button>
+                </div>
+
+                <div class="song-list" id="songList">
+                    <!-- Songs generated by JavaScript -->
+                </div>
+            </section>
+
+            <footer class="page-footer">
+                Made with <span class="heart-pulse">♥</span> for music lovers. Feel the music. Live the vibe.
+            </footer>
+        </main>
+
+        <!-- 5. RIGHT SIDEBAR (Now Playing & Recommended) -->
+        <aside class="right-sidebar" id="rightSidebar">
+
+            <!-- Now Playing Panel -->
+            <div class="now-playing-panel">
+                <div class="panel-header">
+                    <span class="panel-tag">NOW PLAYING</span>
+                    <button type="button" class="panel-close-btn" id="toggleRightSidebar" title="Minimize Panel">⋯</button>
+                </div>
+
+                <div class="now-playing-art-wrap">
+                    <img src="assets/images/feature1.png" alt="Current Album Artwork" id="rightCoverImg" class="now-playing-art">
+                    <div class="art-glow-ring"></div>
+                </div>
+
+                <div class="now-playing-info-row">
+                    <div class="now-playing-text">
+                        <h3 id="rightCurrentTitle">Don't love like I love you</h3>
+                        <p id="rightCurrentArtist">BlueAzumy03</p>
+                    </div>
+                    <button type="button" class="right-fav-btn" id="rightFavBtn" title="Add to favorites">♡</button>
+                </div>
+
+                <!-- Right Mini Progress -->
+                <div class="right-progress-block">
+                    <input type="range" id="rightProgressBar" class="progress-bar-slider" min="0" max="100" value="0">
+                    <div class="right-time-row">
+                        <span id="rightCurrentTime">0:00</span>
+                        <span id="rightDuration">0:00</span>
+                    </div>
+                </div>
+
+                <!-- Right Mini Controls -->
+                <div class="right-controls-row">
+                    <button type="button" class="sub-ctrl-btn" id="rightShuffleBtn" title="Shuffle">🔀</button>
+                    <button type="button" class="sub-ctrl-btn" id="rightPrevBtn" title="Previous">⏮</button>
+                    <button type="button" class="main-ctrl-play" id="rightPlayBtn" title="Play / Pause">▶</button>
+                    <button type="button" class="sub-ctrl-btn" id="rightNextBtn" title="Next">⏭</button>
+                    <button type="button" class="sub-ctrl-btn" id="rightRepeatBtn" title="Repeat">🔁</button>
+                </div>
+            </div>
+
+            <!-- Recommended For You List -->
+            <div class="recommended-panel">
+                <div class="panel-header">
+                    <span class="panel-tag">RECOMMENDED FOR YOU</span>
+                </div>
+
+                <div class="recommended-list" id="recommendedList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- 6. FIXED BOTTOM MUSIC PLAYER -->
+    <footer class="music-player">
+
+        <!-- Left: Current Track Info -->
+        <div class="current-song">
+            <div class="player-cover" id="playerCover">
+                <span>♫</span>
+            </div>
+
+            <div class="current-song-info">
+                <h4 id="currentTitle">No song selected</h4>
+                <p id="currentArtist">Choose a song to get started</p>
+            </div>
+
+            <button type="button" class="player-fav-btn" id="playerFavBtn" title="Add to favorites" aria-label="Toggle favorite">♡</button>
+        </div>
+
+        <!-- Center: Playback Controls & Progress -->
+        <div class="player-controls">
+
+            <div class="control-buttons">
+                <button type="button" class="sub-ctrl-btn" id="shuffleBtn" title="Shuffle" aria-label="Shuffle">🔀</button>
+                <button type="button" id="previousBtn" aria-label="Previous song">⏮</button>
+                <button type="button" id="playBtn" class="play-button" aria-label="Play">▶</button>
+                <button type="button" id="nextBtn" aria-label="Next song">⏭</button>
+                <button type="button" class="sub-ctrl-btn" id="repeatBtn" title="Repeat" aria-label="Repeat">🔁</button>
+            </div>
+
+            <div class="progress-container">
+                <span id="currentTime">0:00</span>
+                <input
+                    type="range"
+                    id="progressBar"
+                    min="0"
+                    max="100"
+                    value="0"
+                    aria-label="Song progress"
+                >
+                <span id="duration">0:00</span>
+            </div>
+
+        </div>
+
+        <!-- Right: Volume, Queue & Fullscreen -->
+        <div class="volume-control">
+            <button type="button" class="aux-btn" id="queueBtn" title="Play Queue">≣</button>
+
+            <div class="vol-slider-wrap">
+                <span class="vol-icon" id="volumeIcon">🔊</span>
+                <input
+                    type="range"
+                    id="volumeControl"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.7"
+                    aria-label="Volume"
+                >
+            </div>
+
+            <button type="button" class="aux-btn" id="fullscreenBtn" title="Full Screen View">⛶</button>
+        </div>
+
+        <!-- Hidden Audio Element -->
+        <audio id="audioPlayer"></audio>
+
+    </footer>
+
+    <!-- 7. MOBILE BOTTOM NAVIGATION (Visible on mobile/phone screens) -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
+        <a href="#" class="mobile-nav-item active" id="mobileNavHome">
+            <span class="mobile-nav-icon">⌂</span>
+            <span>Home</span>
+        </a>
+        <a href="#discover" class="mobile-nav-item" id="mobileNavSearch">
+            <span class="mobile-nav-icon">⌕</span>
+            <span>Search</span>
+        </a>
+        <a href="#discover" class="mobile-nav-item" id="mobileNavLibrary">
+            <span class="mobile-nav-icon">▤</span>
+            <span>Library</span>
+        </a>
+        <a href="#favorites" class="mobile-nav-item" id="mobileNavFavorites">
+            <span class="mobile-nav-icon">♥</span>
+            <span>Liked</span>
+            <span class="mobile-fav-badge" id="mobileFavBadge" style="display: none;">0</span>
+        </a>
+        <button type="button" class="mobile-nav-item" id="mobileNavMenuBtn" aria-label="Open sidebar menu">
+            <span class="mobile-nav-icon">☰</span>
+            <span>Menu</span>
+        </button>
+    </nav>
+
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

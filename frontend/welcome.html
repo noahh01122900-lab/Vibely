@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Vibely</title>
+
+    <link rel="stylesheet" href="css/welcome.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+        <a href="welcome.html" class="logo">
+            <span class="logo-icon">♫</span>
+            Vibely
+        </a>
+
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#features">Features</a>
+            <a href="#about">About</a>
+        </nav>
+
+        <div class="navbar-actions" style="display: flex; align-items: center; gap: 12px;">
+            <a href="index.html" class="nav-button">Explore Music</a>
+
+            <div class="nav-auth-container" id="welcomeNavAuth">
+                <button type="button" class="nav-auth-btn" id="openAuthBtn">
+                    <span>👤</span>
+                    <span>Sign In</span>
+                </button>
+            </div>
+
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+                <span class="theme-icon" id="themeIcon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main id="home" class="hero">
+
+        <section class="hero-content">
+
+            <span class="eyebrow">
+                YOUR MUSIC. YOUR MOMENT.
+            </span>
+
+            <h1>
+                Feel the music.<br>
+                <span>Live the vibe.</span>
+            </h1>
+
+            <p class="hero-description">
+                Discover music that matches your mood.
+                Explore your favorite sounds and enjoy every moment
+                with Vibely.
+            </p>
+
+            <div class="hero-actions">
+                <a href="index.html" class="primary-button">
+                    Explore Music
+                    <span>→</span>
+                </a>
+
+                <button type="button" class="secondary-button" id="heroAuthBtn" style="background:none; border:none; cursor:pointer; font-family:inherit;">
+                    Sign In / Sign Up
+                </button>
+            </div>
+
+            <div class="hero-note">
+                <span class="note-icon">♫</span>
+                <p>Every moment deserves a soundtrack.</p>
+            </div>
+
+        </section>
+
+        <!-- Hero Artwork -->
+        <section class="hero-artwork">
+
+            <div class="artwork-background"></div>
+
+            <div class="album-card album-card-back">
+                <img src="assets/images/sinn sisamuth.jpg" alt="Album artwork">
+            </div>
+
+            <div class="album-card album-card-main">
+                <img src="assets/images/vannda.jpg" alt="Featured album artwork">
+
+                <div class="album-info">
+                    <span>YOUR DAILY SOUNDTRACK</span>
+                    <h3>Find Your Vibe</h3>
+                    <p>Discover something new.</p>
+                </div>
+            </div>
+
+            <div class="floating-note note-one">♫</div>
+            <div class="floating-note note-two">♪</div>
+
+        </section>
+
+    </main>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+
+        <div class="section-heading">
+            <span>WHY VIBELY?</span>
+            <h2>Music makes every moment better.</h2>
+        </div>
+
+        <div class="feature-grid">
+
+            <article class="feature-card">
+                <div class="feature-icon">⌕</div>
+                <h3>Discover Music</h3>
+                <p>Find music and explore sounds that match your mood.</p>
+            </article>
+
+            <article class="feature-card">
+                <div class="feature-icon">♡</div>
+                <h3>Your Favorites</h3>
+                <p>Keep your favorite songs together in one place.</p>
+            </article>
+
+            <article class="feature-card">
+                <div class="feature-icon">♫</div>
+                <h3>Enjoy the Vibe</h3>
+                <p>Enjoy your music and make every moment special.</p>
+            </article>
+
+        </div>
+
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <h2>More than just music.</h2>
+        <p>
+            Vibely is a place to discover music, enjoy your favorite sounds,
+            and create your own musical experience.
+        </p>
+
+        <a href="index.html" class="primary-button">
+            Start Listening →
+        </a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <a href="welcome.html" class="logo">
+            <span class="logo-icon">♫</span>
+            Vibely
+        </a>
+
+        <p>Feel the music. Live the vibe.</p>
+
+        <span>© 2026 Vibely. All rights reserved.</span>
+    </footer>
+
+    <script>
+        // Theme toggle — synced with main page via localStorage
+        const themeToggle = document.getElementById("themeToggle");
+        const themeIcon = document.getElementById("themeIcon");
+
+        function applyTheme(theme) {
+            if (theme === "dark") {
+                document.body.classList.add("dark-mode");
+                themeIcon.textContent = "☀️";
+            } else {
+                document.body.classList.remove("dark-mode");
+                themeIcon.textContent = "🌙";
+            }
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem("vibely_theme") || "light";
+        applyTheme(savedTheme);
+
+        // Toggle on click
+        themeToggle.addEventListener("click", () => {
+            const isDark = document.body.classList.contains("dark-mode");
+            const newTheme = isDark ? "light" : "dark";
+            localStorage.setItem("vibely_theme", newTheme);
+            applyTheme(newTheme);
+        });
+    </script>
+
+    <script src="js/auth.js"></script>
+
+</body>
+</html>

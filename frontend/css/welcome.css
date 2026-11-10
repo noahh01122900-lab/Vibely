@@ -1,0 +1,759 @@
+
+/* =========================
+   GENERAL
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: "DM Sans", sans-serif;
+    background: #faf9fc;
+    color: #211b2e;
+    transition: background-color 0.4s ease, color 0.4s ease;
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* =========================
+   NAVIGATION
+========================= */
+
+.navbar {
+    width: 100%;
+    height: 85px;
+    padding: 0 8%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border-bottom: 1px solid #f0edf4;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 25px;
+    font-weight: 800;
+    color: #38245b;
+}
+
+.logo-icon {
+    color: #8655d8;
+    font-size: 32px;
+}
+
+.navbar nav {
+    display: flex;
+    gap: 38px;
+}
+
+.navbar nav a {
+    font-size: 14px;
+    color: #777080;
+    transition: 0.3s;
+}
+
+.navbar nav a:hover {
+    color: #8655d8;
+}
+
+.nav-button {
+    padding: 12px 23px;
+    border-radius: 10px;
+    background: #7650bd;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.nav-button:hover,
+.primary-button:hover {
+    background: #603caa;
+    transform: translateY(-2px);
+}
+
+/* =========================
+   HERO SECTION
+========================= */
+
+.hero {
+    min-height: 620px;
+    padding: 80px 10%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
+    overflow: hidden;
+}
+
+.hero-content {
+    max-width: 560px;
+}
+
+.eyebrow {
+    display: inline-block;
+    color: #8655d8;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    margin-bottom: 24px;
+}
+
+.hero h1 {
+    font-size: clamp(46px, 5.5vw, 72px);
+    line-height: 1.12;
+    letter-spacing: -3px;
+    font-weight: 800;
+}
+
+.hero h1 span {
+    color: #8655d8;
+}
+
+.hero-description {
+    max-width: 440px;
+    margin-top: 25px;
+    color: #777080;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-top: 35px;
+}
+
+.primary-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 25px;
+    border-radius: 11px;
+    background: #7650bd;
+    color: white;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+.secondary-button {
+    color: #5d4c75;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.secondary-button:hover {
+    color: #8655d8;
+}
+
+.hero-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 55px;
+    color: #938a9c;
+    font-size: 13px;
+}
+
+.note-icon {
+    color: #8655d8;
+    font-size: 23px;
+}
+
+/* =========================
+   HERO ARTWORK
+========================= */
+
+.hero-artwork {
+    position: relative;
+    width: 390px;
+    height: 420px;
+    flex-shrink: 0;
+}
+
+.artwork-background {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    top: 45px;
+    left: 35px;
+    border-radius: 50%;
+    background: #eee5fb;
+}
+
+.album-card {
+    position: absolute;
+    overflow: hidden;
+    border-radius: 18px;
+    background: white;
+    box-shadow: 0 20px 60px rgba(49, 30, 78, 0.15);
+}
+
+.album-card img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.album-card-back {
+    width: 205px;
+    height: 205px;
+    top: 35px;
+    right: 0;
+    transform: rotate(10deg);
+}
+
+.album-card-main {
+    width: 245px;
+    height: 320px;
+    top: 70px;
+    left: 20px;
+    transform: rotate(-5deg);
+}
+
+.album-card-main img {
+    height: 235px;
+}
+
+.album-info {
+    padding: 15px;
+}
+
+.album-info span {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #9471c6;
+}
+
+.album-info h3 {
+    margin-top: 6px;
+    font-size: 19px;
+}
+
+.album-info p {
+    margin-top: 4px;
+    color: #8b8295;
+    font-size: 11px;
+}
+
+.floating-note {
+    position: absolute;
+    color: #8655d8;
+    font-size: 50px;
+    font-weight: 800;
+}
+
+.note-one {
+    top: 10px;
+    left: 0;
+}
+
+.note-two {
+    bottom: 0;
+    right: 5px;
+}
+
+/* =========================
+   FEATURES
+========================= */
+
+.features {
+    padding: 90px 10%;
+    background: #ffffff;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-heading span {
+    color: #8655d8;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.section-heading h2 {
+    margin-top: 12px;
+    font-size: 34px;
+    letter-spacing: -1px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.feature-card {
+    padding: 32px;
+    border: 1px solid #eeeaf3;
+    border-radius: 16px;
+    transition: 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 15px 35px rgba(49, 30, 78, 0.08);
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    background: #f1eafa;
+    color: #8655d8;
+    font-size: 28px;
+}
+
+.feature-card h3 {
+    margin-top: 23px;
+    font-size: 19px;
+}
+
+.feature-card p {
+    margin-top: 10px;
+    color: #898291;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* =========================
+   ABOUT
+========================= */
+
+.about {
+    padding: 100px 20px;
+    text-align: center;
+}
+
+.about h2 {
+    font-size: 36px;
+}
+
+.about p {
+    max-width: 550px;
+    margin: 18px auto 30px;
+    color: #827a8c;
+    line-height: 1.8;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    padding: 35px 8%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: #ffffff;
+    border-top: 1px solid #eeeaf3;
+}
+
+.footer p,
+.footer > span {
+    color: #928a9c;
+    font-size: 12px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+    .hero {
+        padding: 70px 7%;
+        gap: 20px;
+    }
+
+    .hero-artwork {
+        transform: scale(0.85);
+        transform-origin: center;
+        margin-right: -30px;
+    }
+}
+
+@media (max-width: 700px) {
+    .navbar {
+        padding: 12px 5%;
+        height: auto;
+    }
+
+    .navbar nav {
+        display: none;
+    }
+
+    .navbar-actions {
+        gap: 8px !important;
+    }
+
+    .nav-button {
+        padding: 8px 14px;
+        font-size: 12.5px;
+    }
+
+    .nav-auth-btn {
+        padding: 8px 14px;
+        font-size: 12.5px;
+    }
+
+    .theme-toggle {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+        margin-left: 0;
+    }
+
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 45px 5% 60px;
+        overflow: hidden;
+    }
+
+    .hero-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .hero h1 {
+        font-size: 36px;
+        line-height: 1.2;
+    }
+
+    .hero-description {
+        font-size: 14px;
+        max-width: 440px;
+    }
+
+    .hero-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .hero-artwork {
+        margin: 25px auto 10px;
+        transform: scale(0.82);
+        max-width: 100%;
+        overflow: visible;
+    }
+
+    .hero-note {
+        margin-top: 30px;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 0 5%;
+    }
+
+    .section-heading h2 {
+        font-size: 25px;
+    }
+
+    .about {
+        padding: 60px 6%;
+    }
+
+    .about h2 {
+        font-size: 28px;
+    }
+
+    .about p {
+        font-size: 15px;
+    }
+
+    .footer {
+        flex-direction: column;
+        text-align: center;
+        gap: 14px;
+        padding: 30px 5%;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 10px 4%;
+    }
+
+    .logo {
+        font-size: 20px;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+
+    .nav-button {
+        padding: 7px 11px;
+        font-size: 12px;
+    }
+
+    .nav-auth-btn {
+        padding: 7px 11px;
+        font-size: 12px;
+    }
+
+    .theme-toggle {
+        width: 34px;
+        height: 34px;
+        font-size: 15px;
+    }
+
+    .hero {
+        padding: 35px 4% 50px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+        max-width: 280px;
+    }
+
+    .primary-button,
+    .secondary-button {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .hero-artwork {
+        transform: scale(0.68);
+        margin-top: -20px;
+        margin-bottom: -35px;
+    }
+
+    .feature-card {
+        padding: 24px 18px;
+    }
+}
+
+/* =========================
+   THEME TOGGLE BUTTON
+========================= */
+
+.theme-toggle {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #eeeaf3;
+    border-radius: 50%;
+    background: #f5f2fa;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+    border-color: #8655d8;
+    background: #ebe3f7;
+}
+
+.theme-icon {
+    line-height: 1;
+}
+
+/* =========================
+   DARK MODE
+========================= */
+
+body.dark-mode {
+    background: #0d0b14;
+    color: #f0ecf5;
+}
+
+body.dark-mode .navbar {
+    background: #15121f;
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+body.dark-mode .logo {
+    color: #f0ecf5;
+}
+
+body.dark-mode .navbar nav a {
+    color: #91899e;
+}
+
+body.dark-mode .navbar nav a:hover {
+    color: #c084fc;
+}
+
+body.dark-mode .nav-button {
+    background: #8655d8;
+}
+
+body.dark-mode .nav-button:hover,
+body.dark-mode .primary-button:hover {
+    background: #9b6ee6;
+}
+
+body.dark-mode .theme-toggle {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: #201a2d;
+}
+
+body.dark-mode .theme-toggle:hover {
+    border-color: #c084fc;
+    background: #2a2140;
+}
+
+body.dark-mode .eyebrow {
+    color: #c084fc;
+}
+
+body.dark-mode .hero h1 {
+    color: #f0ecf5;
+}
+
+body.dark-mode .hero h1 span {
+    color: #c084fc;
+}
+
+body.dark-mode .hero-description {
+    color: #91899e;
+}
+
+body.dark-mode .primary-button {
+    background: #8655d8;
+}
+
+body.dark-mode .secondary-button {
+    color: #b8a8d0;
+}
+
+body.dark-mode .secondary-button:hover {
+    color: #c084fc;
+}
+
+body.dark-mode .hero-note {
+    color: #6f687b;
+}
+
+body.dark-mode .note-icon {
+    color: #c084fc;
+}
+
+/* Hero Artwork in dark mode */
+body.dark-mode .artwork-background {
+    background: #201a2d;
+}
+
+body.dark-mode .album-card {
+    background: #1a1625;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+body.dark-mode .album-info span {
+    color: #c084fc;
+}
+
+body.dark-mode .album-info h3 {
+    color: #f0ecf5;
+}
+
+body.dark-mode .album-info p {
+    color: #91899e;
+}
+
+body.dark-mode .floating-note {
+    color: #c084fc;
+}
+
+/* Features section dark mode */
+body.dark-mode .features {
+    background: #15121f;
+}
+
+body.dark-mode .section-heading span {
+    color: #c084fc;
+}
+
+body.dark-mode .section-heading h2 {
+    color: #f0ecf5;
+}
+
+body.dark-mode .feature-card {
+    border-color: rgba(255, 255, 255, 0.07);
+    background: #1a1625;
+}
+
+body.dark-mode .feature-card:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .feature-icon {
+    background: #2a2140;
+    color: #c084fc;
+}
+
+body.dark-mode .feature-card h3 {
+    color: #f0ecf5;
+}
+
+body.dark-mode .feature-card p {
+    color: #91899e;
+}
+
+/* About section dark mode */
+body.dark-mode .about h2 {
+    color: #f0ecf5;
+}
+
+body.dark-mode .about p {
+    color: #91899e;
+}
+
+/* Footer dark mode */
+body.dark-mode .footer {
+    background: #15121f;
+    border-top-color: rgba(255, 255, 255, 0.07);
+}
+
+body.dark-mode .footer .logo {
+    color: #f0ecf5;
+}
+
+body.dark-mode .footer p,
+body.dark-mode .footer > span {
+    color: #6f687b;
+}
