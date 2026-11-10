@@ -7,6 +7,7 @@
     // Current user and registered accounts helpers
     const STORAGE_KEY_USER = "vibely_user";
     const STORAGE_KEY_ACCOUNTS = "vibely_accounts";
+    const STORAGE_KEY_TOKEN = "vibely_token";
 
     // Initialize default demo accounts if none exist
     function getStoredAccounts() {
@@ -46,11 +47,15 @@
         }
     }
 
-    function setCurrentUser(user) {
+    function setCurrentUser(user, token = null) {
         if (user) {
             localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
+            if (token) {
+                localStorage.setItem(STORAGE_KEY_TOKEN, token);
+            }
         } else {
             localStorage.removeItem(STORAGE_KEY_USER);
+            localStorage.removeItem(STORAGE_KEY_TOKEN);
         }
         window.dispatchEvent(new CustomEvent("vibely-auth-change", { detail: user }));
         updatePageAuthUI();
@@ -289,21 +294,35 @@
 
         // GOOGLE AUTH
         if (btnGoogleAuth) {
-            btnGoogleAuth.addEventListener("click", () => {
-                // Interactive simulation of Google Sign-In
+            btnGoogleAuth.addEventListener("click", async () => {
                 const googleNames = ["Alex Johnson", "Taylor Swift Fan", "Music Explorer"];
                 const randomName = googleNames[Math.floor(Math.random() * googleNames.length)];
                 const promptName = prompt("Sign in with Google Account Name (or click OK for default):", randomName);
                 if (promptName === null) return; // User cancelled
 
                 const finalName = promptName.trim() || randomName;
-                const user = {
-                    name: finalName,
-                    email: `${finalName.toLowerCase().replace(/\s+/g, ".")}@gmail.com`,
-                    provider: "Google",
-                    avatar: finalName.charAt(0).toUpperCase()
-                };
+                const email = `${finalName.toLowerCase().replace(/\s+/g, ".")}@gmail.com`;
+                const avatar = finalName.charAt(0).toUpperCase();
 
+                // Try backend social login API
+                try {
+                    const res = await fetch("/api/auth/social", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ provider: "google", name: finalName, email, avatar })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        setCurrentUser(data.user, data.token);
+                        closeAuthModal();
+                        showToast(`Signed in with Google as ${data.user.name}! 🎵`, "🚀");
+                        return;
+                    }
+                } catch (e) {
+                    // Backend offline — fallback to local
+                }
+
+                const user = { name: finalName, email, provider: "Google", avatar };
                 setCurrentUser(user);
                 closeAuthModal();
                 showToast(`Signed in with Google as ${user.name}! 🎵`, "🚀");
@@ -312,18 +331,33 @@
 
         // FACEBOOK AUTH
         if (btnFacebookAuth) {
-            btnFacebookAuth.addEventListener("click", () => {
+            btnFacebookAuth.addEventListener("click", async () => {
                 const promptName = prompt("Sign in with Facebook Name (or click OK for default):", "Facebook Music Lover");
                 if (promptName === null) return;
 
                 const finalName = promptName.trim() || "Facebook Listener";
-                const user = {
-                    name: finalName,
-                    email: `${finalName.toLowerCase().replace(/\s+/g, "")}@facebook.com`,
-                    provider: "Facebook",
-                    avatar: "f"
-                };
+                const email = `${finalName.toLowerCase().replace(/\s+/g, "")}@facebook.com`;
+                const avatar = "f";
 
+                // Try backend social login API
+                try {
+                    const res = await fetch("/api/auth/social", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ provider: "facebook", name: finalName, email, avatar })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        setCurrentUser(data.user, data.token);
+                        closeAuthModal();
+                        showToast(`Connected with Facebook as ${data.user.name}! 🎵`, "📘");
+                        return;
+                    }
+                } catch (e) {
+                    // Backend offline — fallback to local
+                }
+
+                const user = { name: finalName, email, provider: "Facebook", avatar };
                 setCurrentUser(user);
                 closeAuthModal();
                 showToast(`Connected with Facebook as ${user.name}! 🎵`, "📘");
@@ -332,7 +366,24 @@
 
         // GUEST AUTH
         if (btnGuestAuth) {
-            btnGuestAuth.addEventListener("click", () => {
+            btnGuestAuth.addEventListener("click", async () => {
+                // Try backend guest login API
+                try {
+                    const res = await fetch("/api/auth/guest", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" }
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        setCurrentUser(data.user, data.token);
+                        closeAuthModal();
+                        showToast(`Welcome! Enjoy Vibely as a Guest (${data.user.name}) 🎧`, "✨");
+                        return;
+                    }
+                } catch (e) {
+                    // Backend offline — fallback to local
+                }
+
                 const guestUser = {
                     name: "Guest Listener",
                     email: "guest@vibely.app",
@@ -348,7 +399,7 @@
 
         // FORM SUBMIT (EMAIL/PASSWORD)
         if (form) {
-            form.addEventListener("submit", (e) => {
+            form.addEventListener("submit", async (e) => {
                 e.preventDefault();
                 const emailInput = document.getElementById("authEmail");
                 const passwordInput = document.getElementById("authPassword");
@@ -375,13 +426,34 @@
                         return;
                     }
 
+                    // Try backend API first
+                    try {
+                        const res = await fetch("/api/auth/register", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ name, email, password })
+                        });
+                        const data = await res.json();
+                        if (res.ok && data.success) {
+                            setCurrentUser(data.user, data.token);
+                            closeAuthModal();
+                            showToast(`Welcome to Vibely, ${data.user.name}! Account created.`, "🎉");
+                            return;
+                        } else if (res.status === 409 || res.status === 400) {
+                            setAlert("error", data.message || "Failed to create account.");
+                            return;
+                        }
+                    } catch (netErr) {
+                        // Backend unreachable — fallback to local storage
+                    }
+
                     const accounts = getStoredAccounts();
                     if (accounts.some(acc => acc.email === email)) {
                         setAlert("error", "An account with this email already exists. Please log in.");
                         return;
                     }
 
-                    // Create new account
+                    // Create new local account
                     const newAccount = {
                         name: name,
                         email: email,
@@ -396,7 +468,28 @@
                     showToast(`Welcome to Vibely, ${newAccount.name}! Account created.`, "🎉");
 
                 } else {
-                    // Log In
+                    // Log In - Try backend API first
+                    try {
+                        const res = await fetch("/api/auth/login", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email, password })
+                        });
+                        const data = await res.json();
+                        if (res.ok && data.success) {
+                            setCurrentUser(data.user, data.token);
+                            closeAuthModal();
+                            showToast(`Welcome back, ${data.user.name}! 🎵`, "👋");
+                            return;
+                        } else if (res.status === 401 || res.status === 400) {
+                            // Backend rejected credentials explicitly
+                            setAlert("error", data.message || "Invalid email or password.");
+                            return;
+                        }
+                    } catch (netErr) {
+                        // Backend unreachable — fallback to local storage
+                    }
+
                     const accounts = getStoredAccounts();
                     const matched = accounts.find(acc => acc.email === email && acc.password === password);
 
@@ -407,7 +500,6 @@
                     } else if (accounts.some(acc => acc.email === email)) {
                         setAlert("error", "Incorrect password. Please try again.");
                     } else {
-                        // Helpful message allowing quick instant creation or check
                         setAlert("error", "No account found with this email. Switch to 'Sign Up' tab to create one!");
                     }
                 }
@@ -616,6 +708,7 @@
         closeModal: closeAuthModal,
         getUser: getCurrentUser,
         setUser: setCurrentUser,
+        getToken: () => localStorage.getItem(STORAGE_KEY_TOKEN) || null,
         logout: () => setCurrentUser(null)
     };
 })();

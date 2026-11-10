@@ -2784,3 +2784,11 @@ body.light-mode .icon-circle-btn {
         grid-template-columns: 1fr;
     }
 }
+
+/* API next track loading state */
+.loading-next {
+    opacity: 0.5 !important;
+    transform: scale(0.92);
+    pointer-events: none;
+    transition: all 0.2s ease;
+}

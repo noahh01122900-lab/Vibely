@@ -136,24 +136,62 @@ const featurePlaylists = {
     }
 };
 
-const localSongs = [
-    featurePlaylists.midnight.songs[0],
-    featurePlaylists.love.songs[0],
-    featurePlaylists.chill.songs[0],
-    featurePlaylists.midnight.songs[1],
-    featurePlaylists.love.songs[1],
-    featurePlaylists.chill.songs[1],
-    featurePlaylists.midnight.songs[2],
-    featurePlaylists.love.songs[2],
-    featurePlaylists.chill.songs[2]
-];
+// ==================================
+// DISCOVERED SONGS STATE
+// Starts completely empty. All pre-existing music has been deleted.
+// Whenever user plays any song, it is added to discovered music.
+// ==================================
+const STORAGE_KEY_DISCOVERED = "vibely_discovered_songs";
 
-// Current active song array
-let songs = [...localSongs];
+function getDiscoveredSongs() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY_DISCOVERED);
+        return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveDiscoveredSongs(list) {
+    try {
+        localStorage.setItem(STORAGE_KEY_DISCOVERED, JSON.stringify(list));
+    } catch (e) {
+        // storage quota
+    }
+}
+
+// Clear all pre-existing music on start
+let discoveredSongs = [];
+try {
+    localStorage.removeItem(STORAGE_KEY_DISCOVERED);
+} catch (e) {}
+
+// Current active song array starts empty
+let songs = [...discoveredSongs];
 let currentSongIndex = -1;
 let currentActiveVibe = null;
 let shuffleMode = false;
 let repeatMode = false;
+
+function sendToDiscoveredMusic(song) {
+    if (!song || !song.title) return;
+    const key = getSongKey(song);
+    const existingIdx = discoveredSongs.findIndex(s => getSongKey(s) === key);
+    if (existingIdx > -1) {
+        // Move to the top of discovered music
+        const [existing] = discoveredSongs.splice(existingIdx, 1);
+        discoveredSongs.unshift(existing);
+    } else {
+        discoveredSongs.unshift({ ...song });
+    }
+    saveDiscoveredSongs(discoveredSongs);
+
+    // If viewing Discover Music (no vibe filter active and not in favorites view)
+    if (!currentActiveVibe && !showingFavorites) {
+        songs = [...discoveredSongs];
+        displaySongs(songs);
+    }
+}
 
 // ==================================
 // 2. DOM ELEMENT REFERENCES
@@ -337,6 +375,19 @@ function displaySongs(songArray) {
     if (!songList) return;
     songList.innerHTML = "";
 
+    if (!songArray || songArray.length === 0) {
+        const emptyState = document.createElement("div");
+        emptyState.className = "empty-favorites";
+        emptyState.style.display = "block";
+        emptyState.innerHTML = `
+            <span class="empty-icon">♫</span>
+            <h3>No discovered music yet</h3>
+            <p>Play any track from the hero banner, featured vibes, or search to discover and collect it here!</p>
+        `;
+        songList.appendChild(emptyState);
+        return;
+    }
+
     songArray.forEach((song, idx) => {
         const songItem = document.createElement("div");
         songItem.className = "song-item";
@@ -402,6 +453,9 @@ function loadSong(index) {
 
     audioPlayer.src = song.audio;
 
+    // Send the played song to discovered music
+    sendToDiscoveredMusic(song);
+
     // Update Bottom Player
     currentTitle.textContent = song.title;
     currentArtist.textContent = song.artist;
@@ -433,6 +487,10 @@ function loadSong(index) {
 
 async function playMusic() {
     if (currentSongIndex === -1) {
+        if (songs.length === 0) {
+            currentActiveVibe = "midnight";
+            songs = [...featurePlaylists.midnight.songs];
+        }
         loadSong(0);
         return;
     }
@@ -486,18 +544,123 @@ if (rightPlayBtn) rightPlayBtn.addEventListener("click", togglePlayPause);
 // 7. NEXT / PREVIOUS / SHUFFLE / REPEAT
 // ==================================
 
-function nextSong() {
-    if (songs.length === 0) return;
+let isFetchingNextSong = false;
 
-    if (shuffleMode) {
-        let randomIndex = Math.floor(Math.random() * songs.length);
-        if (randomIndex === currentSongIndex && songs.length > 1) {
-            randomIndex = (randomIndex + 1) % songs.length;
+// Play next song — fetches dynamically from API instead of looking in discovered music
+async function nextSong() {
+    if (isFetchingNextSong) return;
+    isFetchingNextSong = true;
+
+    // Visual feedback on next buttons
+    if (nextBtn) nextBtn.classList.add("loading-next");
+    if (rightNextBtn) rightNextBtn.classList.add("loading-next");
+
+    try {
+        const currentSong = (currentSongIndex >= 0 && currentSongIndex < songs.length)
+            ? songs[currentSongIndex]
+            : (discoveredSongs[0] || featurePlaylists.midnight.songs[0]);
+
+        // Clean artist name to increase search match rate
+        let artistQuery = "";
+        if (currentSong && currentSong.artist) {
+            artistQuery = currentSong.artist.split(/\s+(?:ft\.?|feat\.?|vs\.?|&|,)\s+/i)[0].trim();
         }
-        loadSong(randomIndex);
-    } else {
-        const nextIndex = (currentSongIndex + 1) % songs.length;
-        loadSong(nextIndex);
+
+        const popularKeywords = ["Lofi Beats", "Chillhop", "Anime Lofi", "Sunset Vibes", "Acoustic Chill", "R&B Chill", "City Pop"];
+        const randomGenre = popularKeywords[Math.floor(Math.random() * popularKeywords.length)];
+
+        // Search queries to attempt
+        const queries = [artistQuery, randomGenre].filter(Boolean);
+
+        let candidates = [];
+
+        for (const q of queries) {
+            try {
+                // Primary: iTunes Music Search API (global, high-res previews)
+                const itunesUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=song&limit=35`;
+                const res = await fetch(itunesUrl);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.results && data.results.length > 0) {
+                        const currentTitle = currentSong ? (currentSong.title || "").toLowerCase() : "";
+                        // Filter out current song and tracks without previewUrl
+                        candidates = data.results.filter(item => {
+                            if (!item.previewUrl) return false;
+                            const title = (item.trackName || "").toLowerCase();
+                            if (currentTitle && title === currentTitle) return false;
+                            // Prefer songs not already in discovered music
+                            return !discoveredSongs.some(d => (d.title || "").toLowerCase() === title);
+                        });
+
+                        // If all matches were already discovered, allow any with preview
+                        if (candidates.length === 0) {
+                            candidates = data.results.filter(item =>
+                                item.previewUrl &&
+                                (item.trackName || "").toLowerCase() !== currentTitle
+                            );
+                        }
+
+                        if (candidates.length > 0) break;
+                    }
+                }
+            } catch (netErr) {
+                // Secondary: Backend proxy if client fetch was blocked
+                try {
+                    const proxyUrl = `/api/search?q=${encodeURIComponent(q)}&limit=25`;
+                    const res = await fetch(proxyUrl);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                            candidates = data.data.filter(item => item.audio);
+                            if (candidates.length > 0) break;
+                        }
+                    }
+                } catch (pe) {}
+            }
+        }
+
+        if (candidates.length > 0) {
+            // Pick a track from API results
+            const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+            const newSong = {
+                title: chosen.trackName || chosen.title,
+                artist: chosen.artistName || chosen.artist,
+                audio: chosen.previewUrl || chosen.audio,
+                cover: (chosen.artworkUrl100 || chosen.cover || "").replace("100x100bb", "400x400bb") || "assets/images/feature1.png",
+                playlistName: chosen.primaryGenreName || chosen.genre || "API Discovery",
+                trackId: chosen.trackId || Math.random().toString(36).substr(2, 9)
+            };
+
+            // Push to active song list and play
+            songs.push(newSong);
+            loadSong(songs.length - 1);
+            return;
+        }
+
+        // Fallback: If network / API unavailable, pick an unplayed track from featured library
+        const fallbackPool = [
+            ...featurePlaylists.midnight.songs,
+            ...featurePlaylists.love.songs,
+            ...featurePlaylists.chill.songs
+        ];
+        const unplayed = fallbackPool.filter(s => getSongKey(s) !== (currentSong ? getSongKey(currentSong) : ""));
+        const fallbackSong = unplayed.length > 0
+            ? unplayed[Math.floor(Math.random() * unplayed.length)]
+            : fallbackPool[0];
+
+        songs.push({ ...fallbackSong });
+        loadSong(songs.length - 1);
+
+    } catch (err) {
+        console.error("[nextSong] API Next Song error:", err);
+        if (songs.length > 0) {
+            const nextIdx = (currentSongIndex + 1) % songs.length;
+            loadSong(nextIdx);
+        }
+    } finally {
+        isFetchingNextSong = false;
+        if (nextBtn) nextBtn.classList.remove("loading-next");
+        if (rightNextBtn) rightNextBtn.classList.remove("loading-next");
     }
 }
 
@@ -530,74 +693,15 @@ if (rightShuffleBtn) rightShuffleBtn.addEventListener("click", toggleShuffle);
 if (repeatBtn) repeatBtn.addEventListener("click", toggleRepeat);
 if (rightRepeatBtn) rightRepeatBtn.addEventListener("click", toggleRepeat);
 
-// Auto-advance or Repeat on song end
+// Auto-advance or Repeat on song end (automatically fetches next song from API)
 audioPlayer.addEventListener("ended", () => {
     if (repeatMode) {
         audioPlayer.currentTime = 0;
         playMusic();
     } else {
-        playNextSameArtist();
+        nextSong();
     }
 });
-
-
-async function playNextSameArtist() {
-    const currentSong = songs[currentSongIndex];
-
-    if (!currentSong) {
-        console.log("Current song not found!");
-        return;
-    }
-
-    const artistName = currentSong.artist;
-
-    try {
-        console.log("Searching artist:", artistName);
-
-        const url = `https://itunes.apple.com/search?term=${encodeURIComponent(artistName)}&entity=song&limit=50&country=KH`;
-
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        console.log("API results:", data.results.length);
-
-        const artistSongs = data.results.filter(song =>
-            song.artistName.toLowerCase() === artistName.toLowerCase() &&
-            song.previewUrl &&
-            song.trackId !== currentSong.trackId
-        );
-
-        if (artistSongs.length === 0) {
-            console.log("No more songs found!");
-            return;
-        }
-
-        const nextTrack = artistSongs[
-            Math.floor(Math.random() * artistSongs.length)
-        ];
-
-        console.log("Next song:", nextTrack.trackName);
-
-        songs.push({
-            title: nextTrack.trackName,
-            artist: nextTrack.artistName,
-            audio: nextTrack.previewUrl,
-            cover: nextTrack.artworkUrl100 || "",
-            appleUrl: nextTrack.trackViewUrl || "",
-            trackId: nextTrack.trackId
-        });
-
-        loadSong(songs.length - 1);
-
-    } catch (error) {
-        console.error("Auto-next error:", error);
-    }
-}
 
 
 // ==================================
@@ -842,11 +946,11 @@ function selectVibe(vibeKey) {
 
 function resetToAllSongs() {
     currentActiveVibe = null;
-    songs = [...localSongs];
+    songs = [...discoveredSongs];
     currentSongIndex = -1;
 
     if (sectionEyebrow) sectionEyebrow.textContent = "YOUR PERSONAL COLLECTION";
-    if (sectionTitle) sectionTitle.textContent = "Discover Music";
+    if (sectionTitle) sectionTitle.textContent = discoveredSongs.length > 0 ? `Discover Music (${discoveredSongs.length} Tracks)` : "Discover Music";
     if (resetVibeBtn) resetVibeBtn.style.display = "none";
 
     updateFeaturedCardsUI();
@@ -1003,7 +1107,7 @@ function addRecentSearch(term) {
 // Gather all unique in-memory tracks for instant 0ms search
 function getAllSearchableSongs() {
     const pool = [
-        ...localSongs,
+        ...discoveredSongs,
         ...featurePlaylists.midnight.songs,
         ...featurePlaylists.love.songs,
         ...featurePlaylists.chill.songs
